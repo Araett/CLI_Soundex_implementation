@@ -1,5 +1,20 @@
 from teso_soundex import soundex
 import pytest
 
-def test_return_x():
-    assert soundex.return_x(123) == 123
+fixtures_folder = 'tests/fixtures/'
+
+def test_read_buffer_can_read_first_10_bytes():
+    with open(fixtures_folder + 'test_text.txt') as f:
+        read_text = soundex.read_buffer(f, 10)
+        assert read_text == "I want to "
+
+
+def test_read_buffer_can_read_whole_file():
+    whole_text = ""
+    with open(fixtures_folder + 'test_text.txt') as f:
+        while True:
+            read_text = soundex.read_buffer(f, 10)
+            if not read_text:
+                break
+            whole_text += read_text
+        assert whole_text == "I want to scream, but I have no mouth\n"
