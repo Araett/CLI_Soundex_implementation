@@ -18,3 +18,7 @@ def test_read_buffer_can_read_whole_file():
                 break
             whole_text += read_text
         assert whole_text == "I want to scream, but I have no mouth\n"
+
+def test_convert_soundex_can_accurately_convert():
+    converted_word = soundex.convert_to_soundex("litttuania")
+    assert converted_word == "l350"
