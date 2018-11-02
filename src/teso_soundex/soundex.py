@@ -1,3 +1,4 @@
+import sys
 from typing import List
 import string
 
@@ -55,18 +56,23 @@ def read_buffer(file_stream, buffer_size: int) -> str:
     return file_stream.read(buffer_size)
 
 
-def convert_to_soundex(word: str) -> str:
-    remainder = word[1:]
-    remainder = remove_letters(remainder)
-    remainder = convert_to_code(remainder)
-    soundex_word = word[0].lower() + remainder
-    print(type(soundex_word))
-    return soundex_word
-
-
 def is_valid(word: str) -> bool:
     allowed_chars = set(string.ascii_letters)
     return set(word).issubset(allowed_chars)
+
+
+def convert_to_soundex(word: str) -> str:
+    try:
+        if not is_valid(word):
+            raise ValueError
+        remainder = word[1:]
+        remainder = remove_letters(remainder)
+        remainder = convert_to_code(remainder)
+        soundex_word = word[0].lower() + remainder
+        return soundex_word
+    except ValueError:
+        print("Invalid word")
+        return None
 
 
 def remove_invalid_words(list_of_words: List[str]) -> List[str]:
@@ -89,5 +95,18 @@ def split_valid_words(text: str) -> List[str]:
     return list_of_words
 
 
+'''def init_soundex(buffer_size: int):
+    remainder = ""
+    filename = sys.argv[1]
+    target_word = convert_to_soundex(sys.argv[2])
+    with open(filename) as f:
+        while True:
+            read_text = read_buffer(buffer_size)
+            if not read_text:
+                return
+'''
+
+
 if __name__ == '__main__':
-    print("Hello World")
+    pass
+    # init_soundex(255)
