@@ -41,3 +41,16 @@ def test_check_validity_of_words():
     valid_words = ["foo", "bar", "foobar", "LOWERCASEuppercase"]
     words = soundex.remove_invalid_words(words)
     assert words == valid_words
+
+
+def test_read_and_convert_to_soundex():
+    assertion_list = ["i000", "w530", "t000", "s265",
+                      "b300", "i000", "h100", "n000", "m300"]
+    with open(fixtures_folder + "test_text.txt") as f:
+        read_text = soundex.read_buffer(f, 255)
+        list_of_words = soundex.split_valid_words(read_text)
+        soundex_list = []
+        for word in list_of_words:
+            soundex_word = soundex.convert_to_soundex(word)
+            soundex_list.append(soundex_word)
+        assert assertion_list == soundex_list

@@ -48,7 +48,6 @@ def remove_letters(word: str) -> str:
     delete_characters = "aeiouyhw"
     translation = str.maketrans("", "", delete_characters)
     word = word.translate(translation)
-    print(word)
     return word
 
 
@@ -61,6 +60,7 @@ def convert_to_soundex(word: str) -> str:
     remainder = remove_letters(remainder)
     remainder = convert_to_code(remainder)
     soundex_word = word[0].lower() + remainder
+    print(type(soundex_word))
     return soundex_word
 
 
@@ -85,6 +85,7 @@ def refactor_punctuation(text: str) -> str:
 def split_valid_words(text: str) -> List[str]:
     text = refactor_punctuation(text)
     list_of_words = str.split(text, " ")
+    list_of_words = remove_invalid_words(list_of_words)
     return list_of_words
 
 
