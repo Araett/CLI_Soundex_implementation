@@ -33,3 +33,11 @@ def test_split_words_by_spaces():
         assertion_list = ["I", "want", "to", "scream",
                           "but", "I", "have", "no", "mouth"]
         assert split_words == assertion_list
+
+
+def test_check_validity_of_words():
+    words = ["foo", "bar", "foobar", "LOWERCASEuppercase", "100platypuses",
+             "D0decahedron", "l33t", "#~Unkown~#@^symbols%"]
+    valid_words = ["foo", "bar", "foobar", "LOWERCASEuppercase"]
+    words = soundex.remove_invalid_words(words)
+    assert words == valid_words

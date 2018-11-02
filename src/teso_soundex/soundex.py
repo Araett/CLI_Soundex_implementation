@@ -1,4 +1,5 @@
 from typing import List
+import string
 
 
 def letter_values(argument: str) -> str:
@@ -63,10 +64,20 @@ def convert_to_soundex(word: str) -> str:
     return soundex_word
 
 
+def is_valid(word: str) -> bool:
+    allowed_chars = set(string.ascii_letters)
+    return set(word).issubset(allowed_chars)
+
+
+def remove_invalid_words(list_of_words: List[str]) -> List[str]:
+    new_list = [item for item in list_of_words if is_valid(item)]
+    return new_list
+
+
 def refactor_punctuation(text: str) -> str:
-    in_tab = "-\\"  # input table
-    out_tab = "  "  # output table
-    delete_tab = ",.;\n\t()[]<>"
+    in_tab = "-\\&#\'"  # input table
+    out_tab = "     "  # output table
+    delete_tab = ",.;\r\n\t()[]<>!?\""
     translation = str.maketrans(in_tab, out_tab, delete_tab)
     return text.translate(translation)
 
