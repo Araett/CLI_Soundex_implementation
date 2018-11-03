@@ -41,7 +41,7 @@ def convert_to_code(word: str) -> str:
         while len(code) != 3:
             code += "0"
     elif len(code) > 3:
-        code = code[0:2]
+        code = code[0:3]
     return code
 
 
