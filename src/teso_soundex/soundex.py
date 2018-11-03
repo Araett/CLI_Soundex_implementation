@@ -106,6 +106,11 @@ def split_valid_words(text: str) -> List[str]:
     return list_of_words
 
 
+def score_codes(score_table: dict,
+                target_word: str,
+                list_of_words: List[str]) -> dict:
+    pass
+
 def init_soundex(filename: str, target_word: str, buffer_size: int):
         remainder = ""
         soundex_list = []
