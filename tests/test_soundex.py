@@ -132,4 +132,4 @@ def test_scoring_of_code():
     with open(fixtures_folder + "test_wiki_lt.txt") as f:
         word_list = get_full_word_list(f)
         score_table = soundex.score_codes(score_table, target_word, word_list)
-        assert score_table["Lithuania"] == [10, 2]
+        assert score_table["Lithuania"] == [10]
