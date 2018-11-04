@@ -91,8 +91,8 @@ def remove_invalid_words(list_of_words: List[str]) -> List[str]:
 
 
 def refactor_punctuation(text: str) -> str:
-    in_tab = "-\\&#\'"  # input table
-    out_tab = "     "  # output table
+    in_tab = "-\\&#\'/:"  # input table
+    out_tab = "       "  # output table
     delete_tab = ",.;\r\n\t()[]<>!?\""
     translation = str.maketrans(in_tab, out_tab, delete_tab)
     return text.translate(translation)
@@ -106,20 +106,40 @@ def split_valid_words(text: str) -> List[str]:
     return list_of_words
 
 
+def compare_codes(target_word: str, soundex_word: str) -> int:
+    score = 0
+    for i in range(0, 4):
+        if target_word[i] == soundex_word[i]:
+            score += 4 - i
+    return score
+
+
 def score_codes(score_table: dict,
                 target_word: str,
                 list_of_words: List[str]) -> dict:
-    pass
+    for item in list_of_words:
+        if item not in score_table:
+            soundex_word = convert_to_soundex(item)
+            score = compare_codes(target_word, soundex_word)
+            if score < 3:
+                continue
+            score_table[item] = [score]
+        else:
+            continue
+    return score_table
+
 
 def init_soundex(filename: str, target_word: str, buffer_size: int):
         remainder = ""
-        soundex_list = []
+        score_table = {}
+        f = open(filename, "r")
         while True:
-            read_text = read_buffer(filename, buffer_size)
+            read_text = read_buffer(f, buffer_size)
             if not read_text:
                 if remainder != "":
-                    soundex_word = convert_to_soundex(remainder)
-                    soundex_list.append(soundex_word)
+                    score_table = score_codes(score_table,
+                                              target_word,
+                                              list(remainder))
                 break
             if remainder != "":
                 flag = is_space_character(read_text[0])
@@ -132,9 +152,8 @@ def init_soundex(filename: str, target_word: str, buffer_size: int):
             if not is_space_character(read_text[len(read_text)-1]):
                 remainder = list_of_words[len(list_of_words)-1]
                 list_of_words = list_of_words[0:len(list_of_words)-1]
-            for word in list_of_words:
-                soundex_word = convert_to_soundex(word)
-                soundex_list.append(soundex_word)
+            score_table = score_codes(score_table, target_word, list_of_words)
+        f.close()
 
 
 if __name__ == '__main__':

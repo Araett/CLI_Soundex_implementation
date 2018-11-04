@@ -18,7 +18,8 @@ def get_full_word_list(file_stream) -> List[str]:
     remainder = ""
     word_list = []
     while True:
-        read_text = soundex.read_buffer(file_stream, 25)
+        read_text = soundex.read_buffer(file_stream, 255)
+        print(read_text)
         if not read_text:
             break
         if remainder != "":
@@ -126,10 +127,9 @@ def test_reading_file_in_buffer_and_converting_to_soundex():
 
 
 def test_scoring_of_code():
-    target_word = "t000"
+    target_word = "l350"
     score_table = {}
-    with open(fixtures_folder + "test_bigger_text.txt") as f:
+    with open(fixtures_folder + "test_wiki_lt.txt") as f:
         word_list = get_full_word_list(f)
         score_table = soundex.score_codes(score_table, target_word, word_list)
-        print(score_table)
-        assert False
+        assert score_table["Lithuania"] == [10, 2]
