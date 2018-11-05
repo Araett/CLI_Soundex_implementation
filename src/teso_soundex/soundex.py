@@ -92,9 +92,9 @@ def remove_invalid_words(list_of_words: List[str]) -> List[str]:
 
 
 def refactor_punctuation(text: str) -> str:
-    in_tab = "-\\&#\'/:"  # input table
-    out_tab = "       "  # output table
-    delete_tab = ",.;\r\n\t()[]<>!?\""
+    in_tab = "-\\&#\'/:\""  # input table
+    out_tab = "        "  # output table
+    delete_tab = ",.;\r\n\t()[]<>!?"
     translation = str.maketrans(in_tab, out_tab, delete_tab)
     return text.translate(translation)
 
@@ -158,7 +158,7 @@ def init_soundex(filename: str, target_word: str, buffer_size: int) -> dict:
                     # score the last word
                     score_table = score_codes(score_table,
                                               target_word,
-                                              list(remainder),
+                                              [remainder],
                                               known_minimum)
                 break
             if remainder != "":
@@ -191,4 +191,5 @@ if __name__ == '__main__':
     filename = sys.argv[1]
     target_word = convert_to_soundex(sys.argv[2])
     scores = init_soundex(filename, target_word, 255)
+    print(scores)
     print_scores(scores)
