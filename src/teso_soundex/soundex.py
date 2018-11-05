@@ -2,6 +2,7 @@ import sys
 from typing import List
 import string
 import operator
+import os.path
 
 
 def letter_values(argument: str) -> str:
@@ -146,11 +147,11 @@ def init_score_table() -> dict:
     return score_table
 
 
-def init_soundex(filename: str, target_word: str, buffer_size: int) -> dict:
+def init_soundex(filenpath: str, target_word: str, buffer_size: int) -> dict:
         remainder = ""
         score_table = init_score_table()
         known_minimum = find_new_minimum(score_table)
-        f = open(filename, "r")
+        f = open(filepath, "r")
         while True:
             read_text = read_buffer(f, buffer_size)
             if not read_text:
@@ -187,9 +188,23 @@ def print_scores(scores: dict):
         print(repr(item[1]).rjust(5), " \t", repr(item[0]).ljust(0))
 
 
+def print_error(*args, **kwargs):
+        print(*args, file=sys.stderr, **kwargs)
+
+
+def check_for_valid_input(filepath: str, target_word: str):
+    if not is_valid(target_word):
+        print_error(target_word, "is not a valid word")
+        quit()
+    if not os.path.isfile(filepath):
+        print_error(filepath,
+                    "is not a valid path to file, and/or file doesn't exist")
+        quit()
+
+
 if __name__ == '__main__':
-    filename = sys.argv[1]
+    check_for_valid_input(sys.argv[1], sys.argv[2])
+    filepath = sys.argv[1]
     target_word = convert_to_soundex(sys.argv[2])
-    scores = init_soundex(filename, target_word, 255)
-    print(scores)
+    scores = init_soundex(filepath, target_word, 255)
     print_scores(scores)
