@@ -9,8 +9,7 @@ fixtures_folder = 'tests/fixtures/'
 
 
 '''
-The code is similar to soundex.init_soundex(), due the fact,
-that init_soundex() function doesn't return anything
+Gets full word list for testing
 '''
 
 
