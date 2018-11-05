@@ -91,24 +91,6 @@ def test_read_and_convert_to_soundex():
         assert assertion_list == soundex_list
 
 
-'''def test_create_test_file_with_soundex():
-    with open(fixtures_folder + "test_bigger_text.txt") as f:
-        w = open(fixtures_folder + "test_soundex_bigger_text.txt", "w")
-        read_text = soundex.read_buffer(f, 200000)
-        list_of_words = soundex.split_valid_words(read_text)
-        soundex_list = []
-        for word in list_of_words:
-            soundex_word = soundex.convert_to_soundex(word)
-            soundex_list.append(soundex_word)
-        test_to_write = ""
-        for item in soundex_list:
-            test_to_write += item + " "
-        test_to_write = test_to_write[0:len(test_to_write)-1]
-        w.write(test_to_write)
-        w.close()
-        assert True'''
-
-
 def test_reading_file_in_buffer_and_converting_to_soundex():
     with open(fixtures_folder + "test_bigger_text.txt") as f:
         f2 = open(fixtures_folder + "test_soundex_bigger_text.txt")
