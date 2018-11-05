@@ -19,7 +19,6 @@ def get_full_word_list(file_stream) -> List[str]:
     word_list = []
     while True:
         read_text = soundex.read_buffer(file_stream, 255)
-        print(read_text)
         if not read_text:
             break
         if remainder != "":
@@ -128,8 +127,16 @@ def test_reading_file_in_buffer_and_converting_to_soundex():
 
 def test_scoring_of_code():
     target_word = "l350"
-    score_table = {}
+    score_table = soundex.init_score_table()
+    known_minimum = soundex.find_new_minimum(score_table)
     with open(fixtures_folder + "test_wiki_lt.txt") as f:
         word_list = get_full_word_list(f)
-        score_table = soundex.score_codes(score_table, target_word, word_list)
-        assert score_table["Lithuania"] == [10]
+        score_table = soundex.score_codes(score_table, target_word,
+                                          word_list, known_minimum)
+        assert score_table["Lithuania"] == 10
+
+
+def test_minimum_finding():
+    score_table = {"foo": 5, "bar": 2, "foobar": 7}
+    new_minimum = soundex.find_new_minimum(score_table)
+    assert new_minimum == ["bar", 2]

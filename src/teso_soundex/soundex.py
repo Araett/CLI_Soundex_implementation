@@ -1,7 +1,7 @@
 import sys
 from typing import List
 import string
-
+import operator
 
 def letter_values(argument: str) -> str:
     letter = argument.lower()
@@ -114,32 +114,51 @@ def compare_codes(target_word: str, soundex_word: str) -> int:
     return score
 
 
+def find_new_minimum(score_table: dict) -> List:
+    sorted_table = sorted(score_table.items(), key=operator.itemgetter(1))
+    return [sorted_table[0][0], sorted_table[0][1]]
+
+
 def score_codes(score_table: dict,
                 target_word: str,
-                list_of_words: List[str]) -> dict:
+                list_of_words: List[str],
+                known_minimum: List) -> dict:
     for item in list_of_words:
         if item not in score_table:
             soundex_word = convert_to_soundex(item)
             score = compare_codes(target_word, soundex_word)
-            if score < 3:
-                continue
-            score_table[item] = [score]
+            if score > known_minimum[1]:
+                del score_table[known_minimum[0]]
+                score_table[item] = score
+                new_minimum = find_new_minimum(score_table)
+                known_minimum[0] = new_minimum[0]
+                known_minimum[1] = new_minimum[1]
         else:
             continue
     return score_table
 
 
+def init_score_table() -> dict:
+    score_table = {}
+    for i in range(0, 5):
+        score_table["NaN" + str(i)] = 0
+    return score_table
+
+
 def init_soundex(filename: str, target_word: str, buffer_size: int):
         remainder = ""
-        score_table = {}
+        score_table = init_score_table()
+        known_minimum = find_new_minimum(score_table)
         f = open(filename, "r")
         while True:
             read_text = read_buffer(f, buffer_size)
             if not read_text:
                 if remainder != "":
+                    # score the last word
                     score_table = score_codes(score_table,
                                               target_word,
-                                              list(remainder))
+                                              list(remainder),
+                                              known_minimum)
                 break
             if remainder != "":
                 flag = is_space_character(read_text[0])
@@ -149,10 +168,12 @@ def init_soundex(filename: str, target_word: str, buffer_size: int):
                     read_text = remainder + " " + read_text
                 remainder = ""
             list_of_words = split_valid_words(read_text)
+            # buffer doesn't know if the word is complete
             if not is_space_character(read_text[len(read_text)-1]):
                 remainder = list_of_words[len(list_of_words)-1]
                 list_of_words = list_of_words[0:len(list_of_words)-1]
-            score_table = score_codes(score_table, target_word, list_of_words)
+            score_table = score_codes(score_table, target_word,
+                                      list_of_words, known_minimum)
         f.close()
 
 
