@@ -3,6 +3,7 @@ from typing import List
 import string
 import operator
 
+
 def letter_values(argument: str) -> str:
     letter = argument.lower()
     switcher = {
@@ -145,7 +146,7 @@ def init_score_table() -> dict:
     return score_table
 
 
-def init_soundex(filename: str, target_word: str, buffer_size: int):
+def init_soundex(filename: str, target_word: str, buffer_size: int) -> dict:
         remainder = ""
         score_table = init_score_table()
         known_minimum = find_new_minimum(score_table)
@@ -175,9 +176,19 @@ def init_soundex(filename: str, target_word: str, buffer_size: int):
             score_table = score_codes(score_table, target_word,
                                       list_of_words, known_minimum)
         f.close()
+        return score_table
+
+
+def print_scores(scores: dict):
+    sorted_scores = sorted(scores.items(), key=operator.itemgetter(1),
+                           reverse=True)
+    print("Score \t Word")
+    for item in sorted_scores:
+        print(repr(item[1]).rjust(5), " \t", repr(item[0]).ljust(0))
 
 
 if __name__ == '__main__':
     filename = sys.argv[1]
     target_word = convert_to_soundex(sys.argv[2])
-    init_soundex(filename, target_word, 255)
+    scores = init_soundex(filename, target_word, 255)
+    print_scores(scores)
