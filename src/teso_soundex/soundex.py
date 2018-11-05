@@ -5,36 +5,45 @@ import operator
 import os.path
 
 
-def letter_values(argument: str) -> str:
-    letter = argument.lower()
-    switcher = {
-        "b": "1",
-        "f": "1",
-        "p": "1",
-        "v": "1",
-        "c": "2",
-        "g": "2",
-        "j": "2",
-        "k": "2",
-        "q": "2",
-        "s": "2",
-        "x": "2",
-        "z": "2",
-        "d": "3",
-        "t": "3",
-        "l": "4",
-        "m": "5",
-        "n": "5",
-        "r": "6"
-    }
-    return switcher.get(letter)
+allowed_chars = set(string.ascii_letters)
+in_tab = "-\\&#\'/:\""  # input table
+out_tab = "        "  # output table
+delete_tab = ",.;\r\n\t()[]<>!?"
+fix_punc = str.maketrans(in_tab, out_tab, delete_tab)
+
+delete_characters = "aeiouyhw"
+del_chars = str.maketrans("", "", delete_characters)
+
+space_characters = set([" ", "-", "\\", "&", "#", "\'"])
+
+
+values = {
+    "b": "1",
+    "f": "1",
+    "p": "1",
+    "v": "1",
+    "c": "2",
+    "g": "2",
+    "j": "2",
+    "k": "2",
+    "q": "2",
+    "s": "2",
+    "x": "2",
+    "z": "2",
+    "d": "3",
+    "t": "3",
+    "l": "4",
+    "m": "5",
+    "n": "5",
+    "r": "6"
+}
 
 
 def convert_to_code(word: str) -> str:
     code = ""
     last_number = ""
     for letter in word:
-        converted_letter = letter_values(letter)
+        converted_letter = values.get(letter)
         if last_number == converted_letter:
             continue
         last_number = converted_letter
@@ -49,9 +58,7 @@ def convert_to_code(word: str) -> str:
 
 def remove_letters(word: str) -> str:
     word = word.lower()
-    delete_characters = "aeiouyhw"
-    translation = str.maketrans("", "", delete_characters)
-    word = word.translate(translation)
+    word = word.translate(del_chars)
     return word
 
 
@@ -60,13 +67,11 @@ def read_buffer(file_stream, buffer_size: int) -> str:
 
 
 def is_valid(word: str) -> bool:
-    allowed_chars = set(string.ascii_letters)
     return set(word).issubset(allowed_chars)
 
 
 def is_space_character(character: str) -> bool:
     # These characters will be translated to whitespace or is a whitespace
-    space_characters = set([" ", "-", "\\", "&", "#", "\'"])
     return set(character).issubset(space_characters)
 
 
@@ -93,11 +98,7 @@ def remove_invalid_words(list_of_words: List[str]) -> List[str]:
 
 
 def refactor_punctuation(text: str) -> str:
-    in_tab = "-\\&#\'/:\""  # input table
-    out_tab = "        "  # output table
-    delete_tab = ",.;\r\n\t()[]<>!?"
-    translation = str.maketrans(in_tab, out_tab, delete_tab)
-    return text.translate(translation)
+    return text.translate(fix_punc)
 
 
 def split_valid_words(text: str) -> List[str]:
