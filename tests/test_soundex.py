@@ -8,11 +8,6 @@ fixtures_folder = 'tests/fixtures/'
 # ------------ Helper functions ---------------
 
 
-'''
-Gets full word list for testing
-'''
-
-
 def get_full_word_list(file_stream) -> List[str]:
     remainder = ""
     word_list = []
