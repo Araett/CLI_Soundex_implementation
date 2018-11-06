@@ -15,10 +15,12 @@ ALLOWED_CHARACTERS = set(string.ascii_letters)
 _in_tab = "-\\&#\'/:\""  # input table
 _out_tab = "        "  # output table
 _delete_tab = ",.;\r\n\t()[]<>!?"
+
 # Translation table for punctuation symbols and escape characters
 PUNCTUATION_TABLE = str.maketrans(_in_tab, _out_tab, _delete_tab)
 
 _delete_characters = "aeiouyhw"
+
 # Letters to delete for soundex conversion
 DELETE_CHARACTERS_TABLE = str.maketrans("", "", _delete_characters)
 
@@ -142,13 +144,13 @@ def check_for_valid_input():
 # ---------------------------------------
 
 
-def score_codes(score_table: dict, target_word: str,
+def score_codes(score_table: dict, target: str,
                 list_of_words: List[str], known_minimum: List) -> dict:
     """Checks the score of found words and returns a dictionary of top words"""
     for item in list_of_words:
         if item not in score_table:
             soundex_word = convert_to_soundex(item)
-            score = compare_codes(target_word, soundex_word)
+            score = compare_codes(target, soundex_word)
             if score > known_minimum[1]:
                 del score_table[known_minimum[0]]
                 score_table[item] = score
@@ -158,11 +160,11 @@ def score_codes(score_table: dict, target_word: str,
     return score_table
 
 
-def compare_codes(target_word: str, soundex_word: str) -> int:
+def compare_codes(target: str, soundex_word: str) -> int:
     """Compares two soundex words and returns the score"""
     score = 0
     for i in range(0, 4):
-        if target_word[i] == soundex_word[i]:
+        if target[i] == soundex_word[i]:
             score += 4 - i
     return score
 
@@ -253,6 +255,6 @@ def init_soundex(filepath: str, target_word: str, buffer_size: int) -> dict:
 if __name__ == '__main__':
     check_for_valid_input()
     filepath = sys.argv[1]
-    target_word = convert_to_soundex(sys.argv[2])
-    scores = init_soundex(filepath, target_word, 255)
+    soundex_word = convert_to_soundex(sys.argv[2])
+    scores = init_soundex(filepath, soundex_word, 255)
     print_scores(scores)
