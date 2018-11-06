@@ -8,17 +8,22 @@ import os.path
 # ---------------------------------------
 # Defines
 # ---------------------------------------
+
+# set of allowed characters
 ALLOWED_CHARACTERS = set(string.ascii_letters)
 
 _in_tab = "-\\&#\'/:\""  # input table
 _out_tab = "        "  # output table
 _delete_tab = ",.;\r\n\t()[]<>!?"
+# Translation table for punctuation symbols and escape characters
 PUNCTUATION_TABLE = str.maketrans(_in_tab, _out_tab, _delete_tab)
 
 _delete_characters = "aeiouyhw"
+# Letters to delete for soundex conversion
 DELETE_CHARACTERS_TABLE = str.maketrans("", "", _delete_characters)
 
-SPACE_CHARACTERS = set([" ", "-", "\\", "&", "#", "\'"])
+# Characters that are translated to whitespace
+SPACE_CHARACTERS = set(" ", "-", "\\", "&", "#", "\'", "\"", "/", ":")
 
 LETTER_VALUES = {
     "b": "1",
@@ -85,6 +90,7 @@ def remove_letters(word: str) -> str:
 
 
 def split_valid_words(text: str) -> List[str]:
+    """Parses given text into a list of valid words"""
     text = refactor_punctuation(text)
     list_of_words = [x for x in str.split(text, " ") if not x == '']
     list_of_words = remove_invalid_words(list_of_words)
@@ -92,11 +98,13 @@ def split_valid_words(text: str) -> List[str]:
 
 
 def remove_invalid_words(list_of_words: List[str]) -> List[str]:
+    """Removes all invalid words from word list and returns a new list"""
     new_list = [item for item in list_of_words if is_valid_word(item)]
     return new_list
 
 
 def refactor_punctuation(text: str) -> str:
+    """Translates found punctuation symbols"""
     return text.translate(PUNCTUATION_TABLE)
 
 # ---------------------------------------
@@ -105,14 +113,17 @@ def refactor_punctuation(text: str) -> str:
 
 
 def is_valid_word(word: str) -> bool:
+    """Check if the word is valid and consists only ascii characters"""
     return set(word).issubset(ALLOWED_CHARACTERS)
 
 
 def is_space_character(symbol: str) -> bool:
+    """Checks if the character is (or soon to be) whitespace"""
     return set(symbol).issubset(SPACE_CHARACTERS)
 
 
 def check_for_valid_input(filepath: str, target_word: str):
+    """Checks user inputs and in case of fail, aborts execution"""
     if not is_valid_word(target_word):
         print_error(target_word, "is not a valid word")
         quit()
@@ -121,15 +132,14 @@ def check_for_valid_input(filepath: str, target_word: str):
                     "is not a valid path to file, and/or file doesn't exist")
         quit()
 
-
 # ---------------------------------------
 # Score Table functions
 # ---------------------------------------
 
-def score_codes(score_table: dict,
-                target_word: str,
-                list_of_words: List[str],
-                known_minimum: List) -> dict:
+
+def score_codes(score_table: dict, target_word: str,
+                list_of_words: List[str], known_minimum: List) -> dict:
+    """Checks the score of found words and returns a dictionary of top words"""
     for item in list_of_words:
         if item not in score_table:
             soundex_word = convert_to_soundex(item)
@@ -144,6 +154,7 @@ def score_codes(score_table: dict,
 
 
 def compare_codes(target_word: str, soundex_word: str) -> int:
+    """Compares two soundex words and returns the score"""
     score = 0
     for i in range(0, 4):
         if target_word[i] == soundex_word[i]:
@@ -152,22 +163,25 @@ def compare_codes(target_word: str, soundex_word: str) -> int:
 
 
 def find_new_minimum(score_table: dict) -> List:
+    """Finds the minimum value in the dict, and returns in form a of a list"""
     sorted_table = sorted(score_table.items(), key=operator.itemgetter(1))
     return [sorted_table[0][0], sorted_table[0][1]]
 
 
 def init_score_table() -> dict:
+    """Initializes score table, filling with 5 empty words"""
     score_table = {}
     for i in range(0, 5):
         score_table["NaN" + str(i)] = 0
     return score_table
 
+
 # ---------------------------------------
 # Input functions
 # ---------------------------------------
 
-
 def buffer_read(file_stream, buffer_size: int) -> str:
+    """Reads a given amount of characters from a file"""
     return file_stream.read(buffer_size)
 
 # ---------------------------------------
@@ -176,6 +190,7 @@ def buffer_read(file_stream, buffer_size: int) -> str:
 
 
 def print_scores(scores: dict):
+    """Prints scores in a formated table"""
     sorted_scores = sorted(scores.items(), key=operator.itemgetter(1),
                            reverse=True)
     print("Score \t Word")
@@ -184,7 +199,7 @@ def print_scores(scores: dict):
 
 
 def print_error(*args, **kwargs):
-        # prints to stderr
+        """Prints error in stderr"""
         print(*args, file=sys.stderr, **kwargs)
 
 # ---------------------------------------
@@ -192,41 +207,42 @@ def print_error(*args, **kwargs):
 # ---------------------------------------
 
 
-def init_soundex(filenpath: str, target_word: str, buffer_size: int) -> dict:
-        remainder = ""
-        score_table = init_score_table()
-        known_minimum = find_new_minimum(score_table)
-        f = open(filepath, "r", encoding="UTF-8")
-        while True:
-            read_text = buffer_read(f, buffer_size)
-            if not read_text:
-                if remainder != "":
-                    # score the last word
-                    score_table = score_codes(score_table, target_word,
-                                              [remainder], known_minimum)
-                break
-
-            # add remainder to the beginning of read_text
+def init_soundex(filepath: str, target_word: str, buffer_size: int) -> dict:
+    """Parses given file and returns a dict of top 5 matched soundex words"""
+    remainder = ""
+    score_table = init_score_table()
+    known_minimum = find_new_minimum(score_table)
+    f = open(filepath, "r", encoding="UTF-8")
+    while True:
+        read_text = buffer_read(f, buffer_size)
+        if not read_text:
             if remainder != "":
-                # flag determines if the character is a (or soon to be) space
-                flag = is_space_character(read_text[0])
-                if not flag:
-                    read_text = remainder + read_text
-                else:
-                    read_text = remainder + " " + read_text
-                remainder = ""
+                # score the last word
+                score_table = score_codes(score_table, target_word,
+                                          [remainder], known_minimum)
+            break
 
-            list_of_words = split_valid_words(read_text)
+        # add remainder to the beginning of read_text
+        if remainder != "":
+            # flag determines if the character is a (or soon to be) space
+            flag = is_space_character(read_text[0])
+            if not flag:
+                read_text = remainder + read_text
+            else:
+                read_text = remainder + " " + read_text
+            remainder = ""
 
-            # buffer doesn't know if the word is complete
-            if not is_space_character(read_text[len(read_text)-1]):
-                remainder = list_of_words[len(list_of_words)-1]
-                list_of_words = list_of_words[0:len(list_of_words)-1]
+        list_of_words = split_valid_words(read_text)
 
-            score_table = score_codes(score_table, target_word,
-                                      list_of_words, known_minimum)
-        f.close()
-        return score_table
+        # buffer doesn't know if the word is complete
+        if not is_space_character(read_text[len(read_text)-1]):
+            remainder = list_of_words[len(list_of_words)-1]
+            list_of_words = list_of_words[0:len(list_of_words)-1]
+
+        score_table = score_codes(score_table, target_word,
+                                  list_of_words, known_minimum)
+    f.close()
+    return score_table
 
 
 if __name__ == '__main__':
