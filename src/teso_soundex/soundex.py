@@ -109,7 +109,6 @@ def is_valid_word(word: str) -> bool:
 
 
 def is_space_character(symbol: str) -> bool:
-    # checks if the next symbol is a (or soon to be) space
     return set(symbol).issubset(SPACE_CHARACTERS)
 
 
@@ -197,7 +196,7 @@ def init_soundex(filenpath: str, target_word: str, buffer_size: int) -> dict:
         remainder = ""
         score_table = init_score_table()
         known_minimum = find_new_minimum(score_table)
-        f = open(filepath, "r")
+        f = open(filepath, "r", encoding="UTF-8")
         while True:
             read_text = buffer_read(f, buffer_size)
             if not read_text:

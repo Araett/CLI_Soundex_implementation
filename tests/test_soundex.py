@@ -34,14 +34,16 @@ def get_full_word_list(file_stream) -> List[str]:
 # ------------ Tests --------------------------
 
 def test_buffer_read_can_read_first_10_bytes():
-    with open(fixtures_folder + 'test_text.txt') as f:
+    with open(fixtures_folder + 'test_text.txt',
+              encoding="UTF-8") as f:
         read_text = soundex.buffer_read(f, 10)
         assert read_text == "I want to "
 
 
 def test_buffer_read_can_read_whole_file():
     whole_text = ""
-    with open(fixtures_folder + 'test_text.txt') as f:
+    with open(fixtures_folder + 'test_text.txt',
+              encoding="UTF-8") as f:
         while True:
             read_text = soundex.buffer_read(f, 10)
             if not read_text:
@@ -56,7 +58,8 @@ def test_convert_soundex_can_accurately_convert():
 
 
 def test_split_words_by_spaces():
-    with open(fixtures_folder + 'test_text.txt') as f:
+    with open(fixtures_folder + 'test_text.txt',
+              encoding="UTF-8") as f:
         read_text = soundex.buffer_read(f, 255)
         split_words = soundex.split_valid_words(read_text)
         assertion_list = ["I", "want", "to", "scream",
@@ -75,7 +78,8 @@ def test_check_validity_of_words():
 def test_read_and_convert_to_soundex():
     assertion_list = ["i000", "w530", "t000", "s265",
                       "b300", "i000", "h100", "n000", "m300"]
-    with open(fixtures_folder + "test_text.txt") as f:
+    with open(fixtures_folder + "test_text.txt",
+              encoding="UTF-8") as f:
         read_text = soundex.buffer_read(f, 255)
         print(read_text)
         list_of_words = soundex.split_valid_words(read_text)
@@ -87,7 +91,8 @@ def test_read_and_convert_to_soundex():
 
 
 def test_reading_file_in_buffer_and_converting_to_soundex():
-    with open(fixtures_folder + "test_bigger_text.txt") as f:
+    with open(fixtures_folder + "test_bigger_text.txt",
+              encoding="UTF-8") as f:
         f2 = open(fixtures_folder + "test_soundex_bigger_text.txt")
         read_assertion = soundex.buffer_read(f2, 20000)
         assertion = read_assertion.split(" ")
@@ -105,7 +110,8 @@ def test_scoring_of_code():
     target_word = "l350"
     score_table = soundex.init_score_table()
     known_minimum = soundex.find_new_minimum(score_table)
-    with open(fixtures_folder + "test_wiki_lt.txt") as f:
+    with open(fixtures_folder + "test_wiki_lt.txt",
+              encoding="UTF-8") as f:
         word_list = get_full_word_list(f)
         score_table = soundex.score_codes(score_table, target_word,
                                           word_list, known_minimum)
