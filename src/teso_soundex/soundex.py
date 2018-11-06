@@ -23,7 +23,7 @@ _delete_characters = "aeiouyhw"
 DELETE_CHARACTERS_TABLE = str.maketrans("", "", _delete_characters)
 
 # Characters that are translated to whitespace
-SPACE_CHARACTERS = set(" ", "-", "\\", "&", "#", "\'", "\"", "/", ":")
+SPACE_CHARACTERS = set([" ", "-", "\\", "&", "#", "\'", "\"", "/", ":"])
 
 LETTER_VALUES = {
     "b": "1",
@@ -122,14 +122,19 @@ def is_space_character(symbol: str) -> bool:
     return set(symbol).issubset(SPACE_CHARACTERS)
 
 
-def check_for_valid_input(filepath: str, target_word: str):
+def check_for_valid_input():
     """Checks user inputs and in case of fail, aborts execution"""
-    if not is_valid_word(target_word):
-        print_error(target_word, "is not a valid word")
+    if sys.argv[1] == "--help":
+        print("python soundex.py <path/to/file> <target_word>")
         quit()
-    if not os.path.isfile(filepath):
-        print_error(filepath,
-                    "is not a valid path to file, and/or file doesn't exist")
+    if len(sys.argv) < 3:
+        print_error("Not enough arguments, please use --help")
+        quit()
+    elif not os.path.isfile(sys.argv[1]):
+        print_error("File doesn't exist or invalid path")
+        quit()
+    elif not is_valid_word(sys.argv[2]):
+        print_error("Invalid target word")
         quit()
 
 # ---------------------------------------
@@ -246,7 +251,7 @@ def init_soundex(filepath: str, target_word: str, buffer_size: int) -> dict:
 
 
 if __name__ == '__main__':
-    check_for_valid_input(sys.argv[1], sys.argv[2])
+    check_for_valid_input()
     filepath = sys.argv[1]
     target_word = convert_to_soundex(sys.argv[2])
     scores = init_soundex(filepath, target_word, 255)
