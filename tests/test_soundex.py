@@ -5,8 +5,9 @@ from teso_soundex import soundex
 fixtures_folder = 'tests/fixtures/'
 
 
-# ------------ Helper functions ---------------
-
+# ---------------------------------------
+# Helper Functions
+# ---------------------------------------
 
 def get_full_word_list(file_stream) -> List[str]:
     remainder = ""
@@ -31,7 +32,9 @@ def get_full_word_list(file_stream) -> List[str]:
     return word_list
 
 
-# ------------ Tests --------------------------
+# ---------------------------------------
+# Tests
+# ---------------------------------------
 
 def test_buffer_read_can_read_first_10_bytes():
     with open(fixtures_folder + 'test_text.txt',
