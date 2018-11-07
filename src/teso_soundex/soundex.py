@@ -4,7 +4,6 @@ import string
 import operator
 import os.path
 
-
 # ---------------------------------------
 # Defines
 # ---------------------------------------
@@ -73,12 +72,9 @@ def convert_to_code(word: str) -> str:
             continue
         last_number = converted_letter
         code += converted_letter
-    if len(code) < 3:
-        while len(code) != 3:
-            code += "0"
-    elif len(code) > 3:
-        code = code[0:3]
-    return code
+    while len(code) < 3:
+        code += "0"
+    return code[0:3]
 
 
 def remove_letters(word: str) -> str:
@@ -94,15 +90,9 @@ def remove_letters(word: str) -> str:
 def split_valid_words(text: str) -> List[str]:
     """Parses given text into a list of valid words"""
     text = refactor_punctuation(text)
-    list_of_words = [x for x in str.split(text, " ") if not x == '']
-    list_of_words = remove_invalid_words(list_of_words)
+    list_of_words = [x for x in str.split(text, " ")
+                     if not x == '' and is_valid_word(x)]
     return list_of_words
-
-
-def remove_invalid_words(list_of_words: List[str]) -> List[str]:
-    """Removes all invalid words from word list and returns a new list"""
-    new_list = [item for item in list_of_words if is_valid_word(item)]
-    return new_list
 
 
 def refactor_punctuation(text: str) -> str:
@@ -129,7 +119,7 @@ def check_for_valid_input():
     if sys.argv[1] == "--help":
         print("python soundex.py <path/to/file> <target_word>")
         quit()
-    if len(sys.argv) < 3:
+    elif len(sys.argv) < 3:
         print_error("Not enough arguments, please use --help")
         quit()
     elif not os.path.isfile(sys.argv[1]):
@@ -256,5 +246,5 @@ if __name__ == '__main__':
     check_for_valid_input()
     filepath = sys.argv[1]
     soundex_word = convert_to_soundex(sys.argv[2])
-    scores = init_soundex(filepath, soundex_word, 255)
+    scores = init_soundex(filepath, soundex_word, 1024)
     print_scores(scores)
