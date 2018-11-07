@@ -71,10 +71,10 @@ def test_split_words_by_spaces():
 
 
 def test_check_validity_of_words():
-    words = ["foo", "bar", "foobar", "LOWERCASEuppercase", "100platypuses",
-             "D0decahedron", "l33t", "#~Unkown~#@^symbols%"]
+    words = ("foo bar foobar LOWERCASEuppercase 100platypuses"
+             "D0decahedron l33t #~Unkown~#@^symbols%")
     valid_words = ["foo", "bar", "foobar", "LOWERCASEuppercase"]
-    words = soundex.remove_invalid_words(words)
+    words = soundex.split_valid_words(words)
     assert words == valid_words
 
 
@@ -84,7 +84,6 @@ def test_read_and_convert_to_soundex():
     with open(fixtures_folder + "test_text.txt",
               encoding="UTF-8") as f:
         read_text = soundex.buffer_read(f, 255)
-        print(read_text)
         list_of_words = soundex.split_valid_words(read_text)
         soundex_list = []
         for word in list_of_words:
