@@ -32,5 +32,3 @@ bash:
     From `pipenv shell` and root folder::
 
         pytest
-
-
