@@ -53,6 +53,7 @@ LETTER_VALUES = {
 
 
 def convert_to_soundex(word: str) -> str:
+    """Converts given word to Soundex code"""
     remainder = word[1:]
     if len(remainder) > 0:
         remainder = remove_letters(remainder)
@@ -64,6 +65,7 @@ def convert_to_soundex(word: str) -> str:
 
 
 def convert_to_code(word: str) -> str:
+    """Converts remainder to Soundex code and returns it"""
     code = ""
     last_number = ""
     for letter in word:
@@ -78,6 +80,7 @@ def convert_to_code(word: str) -> str:
 
 
 def remove_letters(word: str) -> str:
+    """Removes unnecessary letters for Soundex algorithm"""
     word = word.lower()
     word = word.translate(DELETE_CHARACTERS_TABLE)
     return word
